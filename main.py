@@ -1,16 +1,18 @@
 import gradio as gr
-
-
-def greet(name, intensity):
-    return "Hello, " + name + "!" * int(intensity)
+from app import set_api_key, response
 
 
 with gr.Blocks() as demo:
+
+    api_key_textbox = gr.Textbox(type="password")
+    message_textbox = gr.Textbox()
     gr.Interface(
-        fn=greet,
-        inputs=["text", "slider"],
+        fn=response,
+        inputs=[message_textbox],
         outputs=["text"],
     )
+    api_key_textbox.change(set_api_key, inputs=[api_key_textbox])
+
     gr.Markdown(
         "If you liked this space, please give me a star on GitHub 😉: [Github repo](https://github.com/jorge-armando-navarro-flores/Translator)"
     )
