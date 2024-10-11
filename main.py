@@ -5,7 +5,7 @@ from app import set_api_key, response
 with gr.Blocks() as demo:
 
     api_key_textbox = gr.Textbox(type="password")
-    message_textbox = gr.Textbox()
+    message_textbox = gr.Textbox(value="add 2 and 5, then multiply it by 7")
     gr.Interface(
         fn=response,
         inputs=[message_textbox],
