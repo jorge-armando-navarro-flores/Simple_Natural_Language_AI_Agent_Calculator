@@ -9,8 +9,14 @@ agent = Agent(
 
 def set_api_key(api_key):
     agent.set_api_key(api_key)
+    return ""
 
 
 def response(messages):
-    messages = agent.get_agent().invoke({"messages": messages})
-    return "\n".join([m.pretty_repr() for m in messages['messages']])
+    try:
+        config = {"configurable": {"thread_id": "1"}}
+        messages = agent.get_agent().invoke({"messages": messages}, config=config)
+        return "", "\n".join([m.pretty_repr() for m in messages["messages"]])
+    except Exception as e:
+        print(e)
+        return "", "There is somenthing wrong with your api key"

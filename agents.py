@@ -5,26 +5,31 @@ from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition, ToolNode
+from langgraph.checkpoint.memory import MemorySaver
+
+memory = MemorySaver()
 
 
 class Agent:
     def __init__(self, sys_msg, tools):
         self.sys_msg = SystemMessage(sys_msg)
-        self.llm = ChatOpenAI(model="gpt-4o")
         self.tools = tools
-        self.llm_with_tools = self.llm.bind_tools(self.tools)
+        self.set_agent()
 
     def set_api_key(self, api_key):
         os.environ["OPENAI_API_KEY"] = api_key
-        self.llm = ChatOpenAI(model="gpt-4o")
-        self.llm_with_tools = self.llm.bind_tools(self.tools)
-        
+        self.set_agent()
+
     def assistant(self, state: MessagesState):
         return {
             "messages": [self.llm_with_tools.invoke([self.sys_msg] + state["messages"])]
         }
 
-    def get_agent(self):
+    def set_agent(self):
+        self.llm = ChatOpenAI(model="gpt-4o")
+        self.llm_with_tools = self.llm.bind_tools(self.tools)
+        self.memory = MemorySaver()
+
         # Graph
         builder = StateGraph(MessagesState)
 
@@ -41,8 +46,10 @@ class Agent:
             tools_condition,
         )
         builder.add_edge("tools", "assistant")
-        return builder.compile()
+        self.agent = builder.compile(checkpointer=self.memory)
 
+    def get_agent(self):
+        return self.agent
 
 
 class Chain:
