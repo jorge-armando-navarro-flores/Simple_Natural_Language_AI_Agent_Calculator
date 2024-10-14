@@ -3,15 +3,22 @@ from app import set_api_key, response
 
 
 with gr.Blocks() as demo:
+    gr.Label("Natural Language Calculator", color="#6EACDA")
     api_key_textbox = gr.Textbox(
         label="Open AI API Key",
         placeholder="Set your OpenAI API key (Required)",
         type="password",
     )
+    api_key_link_markdown = gr.Markdown(
+        "[Get Your OpenAI API key here](https://platform.openai.com/api-keys)"
+    )
+
     with gr.Row():
 
         with gr.Column():
-            message_textbox = gr.Textbox(label="Query", placeholder="Add 2 and 5, then multiply it by 7")
+            message_textbox = gr.Textbox(
+                label="Query", placeholder="Add 2 and 5, then multiply it by 7"
+            )
             submit_btn = gr.Button(value="Submit")
         with gr.Column():
             output_textbox = gr.Textbox(label="Response")
